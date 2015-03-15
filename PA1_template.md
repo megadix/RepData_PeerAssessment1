@@ -8,9 +8,17 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r, echo=TRUE}
+
+```r
 # extract zip file to "data"
 dir.create("data")
+```
+
+```
+## Warning in dir.create("data"): 'data' already exists
+```
+
+```r
 unzip("activity.zip", exdir = "data")
 # load raw data
 rawData <- read.csv("data/activity.csv")
@@ -20,7 +28,8 @@ rawData$interval <- as.factor(rawData$interval)
 
 ## What is mean total number of steps taken per day?
 
-```{r, echo=TRUE, fig.width=10, fig.height=4}
+
+```r
 par(mfrow = c(1, 3))
 
 sumStepsPerDay <- tapply(rawData$steps, rawData$date, sum, na.rm = TRUE)
@@ -33,25 +42,36 @@ medianStepsPerDay <- tapply(rawData$steps, rawData$date, median, na.rm = TRUE)
 hist(medianStepsPerDay, main = "Median steps per day", xlab = "Median of steps")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 ## What is the average daily activity pattern?
 
-```{r, echo=TRUE}
+
+```r
 avgStepsPerInterval <- xtabs(steps ~ interval, aggregate(steps ~ interval, rawData, mean))
 plot(avgStepsPerInterval, type = "l", main = "Daily Activiy Pattern", xlab = "Time of the day", ylab = "Avg. number of steps")
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 ## Imputing missing values
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-```{r, echo=TRUE}
+
+```r
 table(is.na(rawData$steps))[["TRUE"]]
+```
+
+```
+## [1] 2304
 ```
 
 2. Strategy for filling in all of the missing values in the dataset: **use the mean for that 5-minute interval.**
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r, echo=TRUE}
+
+```r
 # work on a copy of raw data
 filledData <- rawData
 # find indexes of NA values
@@ -67,7 +87,8 @@ for (i in naIndexes) {
 
 4. Updated exploratory charts:
 
-```{r, echo=TRUE, fig.width=10, fig.height=4}
+
+```r
 par(mfrow = c(1, 3))
 
 sumStepsPerDay2 <- tapply(filledData$steps, filledData$date, sum)
@@ -80,10 +101,12 @@ medianStepsPerDay2 <- tapply(filledData$steps, filledData$date, median)
 hist(medianStepsPerDay2, main = "Median steps per day", xlab = "Median of steps")
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo=TRUE}
 
+```r
 # Add "dayType" factor
 filledData$dayType <- factor(c("weekday", "weekend"))
 dates <- strptime(filledData$date, "%Y-%m-%d")
@@ -101,3 +124,5 @@ plot(avgStepsPerIntervalWeekday, type = "l", xlab = "Time of the day", ylab = "A
 
 plot(avgStepsPerIntervalWeekend, type = "l", xlab = "Time of the day", ylab = "Avg. number of steps")
 ```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
